@@ -1,4 +1,4 @@
-import os
+# config.load_config 와 load_seeds 의 병합 동작을 검증하는 테스트
 from config import load_config
 
 
