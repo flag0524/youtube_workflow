@@ -1,0 +1,71 @@
+brand:
+  channel_name: "AI 일잘러"
+  logo_text: "AI 일잘러"
+
+target:
+  audience: "office_worker"
+  keywords:
+    - 보고서
+    - 엑셀
+    - 회의록
+    - 기획
+    - 마케팅
+    - 업무
+    - 직장인
+    - 자동화
+    - 문서
+    - 메일
+
+formats:
+  mon: { name: "AI 이슈 속보", seconds: 25, role: "reach" }
+  tue: { name: "바로 쓰는 AI 업무 꿀팁", seconds: 40, role: "reach" }
+  wed: { name: "AI 이슈 속보", seconds: 25, role: "reach" }
+  thu: { name: "바로 쓰는 AI 업무 꿀팁", seconds: 40, role: "reach" }
+  fri: { name: "AI 이슈 속보", seconds: 25, role: "reach" }
+  sat: { name: "업무 자동화 사례", seconds: 45, role: "convert" }
+  sun: { name: "업무 자동화 사례", seconds: 45, role: "convert" }
+
+angles:
+  - loss_aversion
+  - actionable
+  - korea_only
+  - comparison
+  - number_shock
+  - myth_busting
+  - job_threat
+
+# 주 1회 상한. 반복하면 채널이 공포 소구로 굳어 구독 전환이 떨어진다.
+angle_weekly_cap:
+  job_threat: 1
+
+scoring:
+  duplicate_penalty: 40
+  duplicate_jaccard_threshold: 0.4
+  duplicate_window_days: 30
+
+cold_start:
+  threshold_videos: 30
+  seed_ratio_before: 0.8
+  seed_ratio_after: 0.4
+
+voice:
+  name: "ko-KR-SunHiNeural"
+  rate: "+12%"
+
+video:
+  width: 1080
+  height: 1920
+  fps: 30
+  font_family: "Malgun Gothic"
+  font_dir: "assets/fonts"
+  caption_y: 960
+  hook_y: 760
+
+upload:
+  publish_time_kst: "18:00"
+  category_id: "28"
+  timezone_offset_hours: 9
+
+llm:
+  model: "claude-sonnet-5"
+  chars_per_minute: 330

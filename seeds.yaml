@@ -1,0 +1,26 @@
+seeds:
+  - keyword: "챗GPT 보고서 작성"
+    angle: actionable
+    note: "직장인 검색 수요 상시"
+  - keyword: "엑셀 함수 AI로 만들기"
+    angle: actionable
+    note: "사무직 진입 주제"
+  - keyword: "회의록 자동 정리"
+    angle: actionable
+    note: "저장률 높음"
+  - keyword: "무료로 쓰는 AI 도구"
+    angle: loss_aversion
+    note: "유료 결제 회피 심리"
+  - keyword: "AI 번역 자연스럽게 쓰는 법"
+    angle: actionable
+  - keyword: "한국어로 쓰면 성능 떨어지는 이유"
+    angle: korea_only
+    note: "국내 채널의 해자"
+  - keyword: "프롬프트 잘 쓰는 법"
+    angle: actionable
+  - keyword: "AI로 PPT 만들기"
+    angle: actionable
+  - keyword: "메일 답장 AI로 쓰기"
+    angle: actionable
+  - keyword: "AI 도구 유료 무료 차이"
+    angle: number_shock
