@@ -72,3 +72,9 @@ def test_validate_rejects_empty_sources():
     data["sources"] = []
     with pytest.raises(ValueError, match="sources"):
         validate_script(data, seconds=40, cpm=330)
+
+
+def test_validate_accepts_narration_at_exact_upper_boundary():
+    # 220 * 1.15 == 252.99999999999997 in float arithmetic, not 253.0 —
+    # this boundary value must not be rejected by the tolerance check.
+    validate_script(_valid(253), seconds=40, cpm=330)

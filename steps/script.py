@@ -69,7 +69,7 @@ def validate_script(data: dict, *, seconds: int, cpm: int) -> None:
     total = sum(len(s["narration"]) for s in data["segments"])
     goal = target_chars(seconds, cpm)
     lo, hi = goal * (1 - LENGTH_TOLERANCE), goal * (1 + LENGTH_TOLERANCE)
-    if not lo <= total <= hi:
+    if not lo - 1e-9 <= total <= hi + 1e-9:
         raise ValueError(
             f"나레이션 길이가 범위를 벗어났다: {total}자 (목표 {goal}자, 허용 {lo:.0f}~{hi:.0f}자)"
         )
@@ -98,8 +98,8 @@ def run(date_str: str, out_dir: Path, *, dry_run: bool = False) -> dict:
         text = resp.content[0].text.strip()
         if text.startswith("```"):
             text = text.split("```")[1].removeprefix("json").strip()
-        data = json.loads(text)
         try:
+            data = json.loads(text)
             validate_script(data, seconds=fmt["seconds"], cpm=cpm)
             break
         except ValueError as exc:
