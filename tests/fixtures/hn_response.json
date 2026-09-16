@@ -1,0 +1,17 @@
+{
+  "hits": [
+    {
+      "title": "OpenAI releases new agent framework",
+      "url": "https://example.com/a",
+      "points": 320,
+      "created_at": "2026-09-11T22:00:00.000Z"
+    },
+    {
+      "title": "Show HN: I built a spreadsheet copilot",
+      "url": null,
+      "objectID": "44444",
+      "points": 88,
+      "created_at": "2026-09-12T01:30:00.000Z"
+    }
+  ]
+}
