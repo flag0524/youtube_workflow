@@ -38,3 +38,15 @@ def test_parse_rss_maps_fields():
 
 def test_parse_rss_returns_empty_on_garbage():
     assert parse_rss("not xml at all", "googlenews") == []
+
+
+def test_parse_hn_accepts_timestamp_without_milliseconds():
+    payload = {"hits": [{
+        "title": "Some story without millisecond timestamp",
+        "url": "https://example.com/b",
+        "points": 100,
+        "created_at": "2026-09-16T02:25:18Z",
+    }]}
+    items = parse_hn(payload)
+    assert len(items) == 1
+    assert items[0]["published_at"] == datetime(2026, 9, 16, 2, 25, 18, tzinfo=timezone.utc)

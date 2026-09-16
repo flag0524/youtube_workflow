@@ -15,6 +15,19 @@ RSS_FEEDS = [
 ]
 
 
+_HN_TIMESTAMP_FORMATS = ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ")
+
+
+def _parse_hn_timestamp(text: str) -> datetime:
+    # HN Algolia API는 타임스탬프 형식이 일관되지 않다. 밀리초 포함/미포함 두 형식 모두 지원해야 한다.
+    for fmt in _HN_TIMESTAMP_FORMATS:
+        try:
+            return datetime.strptime(text, fmt).replace(tzinfo=timezone.utc)
+        except ValueError:
+            continue
+    raise ValueError(f"HN 타임스탬프 형식을 인식할 수 없다: {text}")
+
+
 def parse_hn(payload: dict) -> list[dict]:
     items = []
     for hit in payload.get("hits", []):
@@ -27,9 +40,7 @@ def parse_hn(payload: dict) -> list[dict]:
             "url": url,
             "source": "hackernews",
             "points": hit.get("points") or 0,
-            "published_at": datetime.strptime(
-                hit["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
-            ).replace(tzinfo=timezone.utc),
+            "published_at": _parse_hn_timestamp(hit["created_at"]),
         })
     return items
 
