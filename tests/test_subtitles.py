@@ -24,6 +24,12 @@ def test_format_time():
     assert format_time(3661.5) == "1:01:01.50"
 
 
+def test_format_time_carries_seconds_into_minutes():
+    # 59.995 rounds to 60.00 centiseconds worth of seconds — must roll into
+    # the minutes place, not emit an invalid "60.00" seconds value.
+    assert format_time(59.995) == "0:01:00.00"
+
+
 def test_build_ass_has_required_sections():
     ass = build_ass(TIMINGS, CFG)
     assert "[Script Info]" in ass

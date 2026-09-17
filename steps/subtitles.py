@@ -20,13 +20,11 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
 
 def format_time(seconds: float) -> str:
-    seconds = max(0.0, seconds)
-    hours, rem = divmod(seconds, 3600)
-    minutes, secs = divmod(rem, 60)
-    centis = int(round((secs - int(secs)) * 100))
-    if centis == 100:  # 반올림이 초를 넘기는 경우
-        secs, centis = int(secs) + 1, 0
-    return f"{int(hours)}:{int(minutes):02d}:{int(secs):02d}.{centis:02d}"
+    total_centis = int(round(max(0.0, seconds) * 100))
+    hours, rem = divmod(total_centis, 360000)
+    minutes, rem = divmod(rem, 6000)
+    secs, centis = divmod(rem, 100)
+    return f"{hours}:{minutes:02d}:{secs:02d}.{centis:02d}"
 
 
 def _escape(text: str) -> str:
