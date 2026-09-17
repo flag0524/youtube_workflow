@@ -25,9 +25,12 @@ def test_format_time():
 
 
 def test_format_time_carries_seconds_into_minutes():
-    # 59.995 rounds to 60.00 centiseconds worth of seconds — must roll into
-    # the minutes place, not emit an invalid "60.00" seconds value.
-    assert format_time(59.995) == "0:01:00.00"
+    # 59.996 is the actual float boundary that rounds up to 60.00 centiseconds
+    # worth of seconds (59.995 looks like the boundary on paper, but
+    # 59.995 - 59 == 0.9949999999999974 in binary float, which rounds down to
+    # 99 centiseconds, not 100 — verified by direct execution). Must roll
+    # into the minutes place, not emit an invalid "60.00" seconds value.
+    assert format_time(59.996) == "0:01:00.00"
 
 
 def test_build_ass_has_required_sections():
