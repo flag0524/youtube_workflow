@@ -24,3 +24,22 @@ seeds:
     angle: actionable
   - keyword: "AI 도구 유료 무료 차이"
     angle: number_shock
+  - keyword: "노션 AI로 할 일 자동 정리"
+    angle: actionable
+    note: "기획/일정관리 타깃"
+  - keyword: "구글시트 vs 엑셀 AI 기능 비교"
+    angle: comparison
+  - keyword: "챗GPT vs 클로드 업무용 비교"
+    angle: comparison
+  - keyword: "데이터 분석 엑셀 대신 AI에게 시키기"
+    angle: actionable
+  - keyword: "마케팅 카피 AI로 5분 완성"
+    angle: actionable
+    note: "마케팅 키워드 타깃"
+  - keyword: "AI가 다 알아서 해준다는 착각"
+    angle: myth_busting
+    note: "검수 습관 강조, 신뢰 확보용"
+  - keyword: "업무용 프롬프트 템플릿 무료로 받는 법"
+    angle: loss_aversion
+  - keyword: "일정관리 AI 비서로 자동화"
+    angle: actionable
