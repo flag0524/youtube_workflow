@@ -1,0 +1,73 @@
+{
+  "date": "2026-09-22",
+  "title": "LangGraph로 에이전트 흐름 제어하기",
+  "hook": "체인 말고 그래프로 가라",
+  "segments": [
+    {
+      "narration": "보통 AI 체인은 정해진 순서로만 실행돼서, 중간에 판단이 필요하면 한계가 있어요.",
+      "caption": [
+        "정해진 순서만",
+        "실행하는 체인",
+        "판단이 필요하면",
+        "한계가 있어요"
+      ]
+    },
+    {
+      "narration": "LangGraph는 노드와 엣지로 흐름을 짜서, 조건에 따라 다른 경로로 분기할 수 있어요.",
+      "caption": [
+        "노드와 엣지로",
+        "흐름을 짜면",
+        "조건 따라",
+        "경로가 갈라져요"
+      ]
+    },
+    {
+      "narration": "상태를 저장하는 구조라서, 이전 결과를 참고하며 반복 작업도 자연스럽게 처리됩니다.",
+      "caption": [
+        "상태를 저장해서",
+        "이전 결과 참고",
+        "반복 작업도",
+        "자연스럽게 처리"
+      ]
+    },
+    {
+      "narration": "그래서 단순 챗봇이 아니라, 스스로 판단하고 재시도하는 진짜 에이전트를 만들 때 씁니다.",
+      "caption": [
+        "단순 챗봇 아닌",
+        "스스로 판단하고",
+        "재시도하는",
+        "진짜 에이전트"
+      ]
+    }
+  ],
+  "loopLine": "그래프로 생각하면 에이전트가 쉬워진다",
+  "description": "체인처럼 순서대로만 실행되는 방식과 달리, LangGraph는 노드와 엣지로 흐름을 표현해서 조건에 따라 분기하고 반복할 수 있습니다. 상태를 저장하는 구조 덕분에 이전 단계 결과를 참고하면서 스스로 판단하고 재시도하는 진짜 에이전트를 만들 수 있어요.\n\n#LangGraph #AI에이전트 #자동화 #개발자AI #젊은오빠TV",
+  "tags": [
+    "LangGraph",
+    "AI에이전트",
+    "자동화",
+    "개발자AI",
+    "젊은오빠TV"
+  ],
+  "scenes": [
+    {
+      "prompt": "a node-and-edge graph diagram glowing in blue, flowchart style, floating in dark space",
+      "segIdx": [
+        0
+      ]
+    },
+    {
+      "prompt": "a glowing decision branch diagram with multiple pathways splitting apart, dark futuristic tech background",
+      "segIdx": [
+        1,
+        2
+      ]
+    },
+    {
+      "prompt": "a robotic AI agent icon making a decision at a glowing crossroad, futuristic minimalist style, holographic UI elements",
+      "segIdx": [
+        3
+      ]
+    }
+  ]
+}
