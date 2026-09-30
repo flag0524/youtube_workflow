@@ -76,6 +76,10 @@ def _apply_options(page, seconds: int, cfg: dict) -> int:
 def _submit(page, prompt: str) -> None:
     page.locator(".prosemirror-editor").first.click()
     page.keyboard.insert_text(prompt)
+    page.wait_for_timeout(500)
+    # 크레딧이 모자라면 제출 버튼이 "크레딧 부족 경고" 아이콘으로 바뀐다.
+    if page.get_by_label("크레딧 부족 경고").count():
+        raise RuntimeError("Flow 크레딧이 부족하다")
     page.get_by_text("arrow_forward").last.click()
 
 
