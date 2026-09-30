@@ -72,3 +72,16 @@ def test_build_ffmpeg_command_uses_yuv420p_for_compatibility():
     cmd = build_ffmpeg_command("bg.png", "narration.mp3", "subs.ass",
                                "short.mp4", CFG)
     assert "yuv420p" in cmd
+
+
+def test_flow_command_trims_each_clip_and_drops_flow_audio():
+    from steps.render import build_flow_ffmpeg_command
+
+    cmd = build_flow_ffmpeg_command(
+        ["clips/clip_0.mp4", "clips/clip_1.mp4"], [4.6, 3.2],
+        "narration.mp3", "subs.ass", "short.mp4", CFG)
+    joined = " ".join(cmd)
+    assert "trim=duration=4.600" in joined and "trim=duration=3.200" in joined
+    assert "concat=n=2:v=1:a=0" in joined  # Flow 오디오는 이어붙이지 않는다
+    assert "-map 2:a" in joined  # 나레이션은 클립 뒤 입력이다
+    assert "subtitles=subs.ass" in joined and "D:" not in joined

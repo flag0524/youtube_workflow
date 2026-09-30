@@ -7,6 +7,7 @@ from pathlib import Path
 from fontTools.ttLib import TTFont
 
 from config import load_config
+from steps.flow import segment_durations
 from steps.subtitles import build_ass
 
 # 이 글자들이 전부 있어야 한국어 자막이 두부(□)로 깨지지 않는다.
@@ -84,6 +85,31 @@ def build_ffmpeg_command(bg: str, mp3: str, ass: str, out: str,
     ]
 
 
+def build_flow_ffmpeg_command(clips: list[str], durations: list[float], mp3: str,
+                              ass: str, out: str, cfg: dict) -> list[str]:
+    """Flow 클립을 세그먼트 길이만큼 잘라 9:16 으로 맞춰 잇는다. Flow 오디오는 버린다."""
+    v = cfg["video"]
+    w, h, fps = v["width"], v["height"], v["fps"]
+    parts = [
+        f"[{i}:v]trim=duration={d:.3f},setpts=PTS-STARTPTS,"
+        f"scale={w}:{h}:force_original_aspect_ratio=increase,crop={w}:{h},"
+        f"fps={fps},setsar=1[v{i}]"
+        for i, d in enumerate(durations)
+    ]
+    joined = "".join(f"[v{i}]" for i in range(len(clips)))
+    graph = (";".join(parts) + f";{joined}concat=n={len(clips)}:v=1:a=0[cat];"
+             f"[cat]subtitles={ass}:fontsdir=fonts[v]")
+    cmd = ["ffmpeg", "-y"]
+    for c in clips:
+        cmd += ["-i", c]
+    cmd += ["-i", mp3, "-filter_complex", graph,
+            "-map", "[v]", "-map", f"{len(clips)}:a",
+            "-c:v", "libx264", "-preset", "medium", "-crf", "23",
+            "-pix_fmt", "yuv420p", "-r", str(fps),
+            "-c:a", "aac", "-b:a", "192k", "-shortest", out]
+    return cmd
+
+
 def run(date_str: str, out_dir: Path, *, dry_run: bool = False) -> Path:
     cfg = load_config()
     timings = json.loads((out_dir / "timings.json").read_text(encoding="utf-8"))
@@ -99,8 +125,15 @@ def run(date_str: str, out_dir: Path, *, dry_run: bool = False) -> Path:
     shutil.copy(font_path, local_fonts / font_path.name)
     shutil.copy(Path(cfg["root"]) / "assets/bg/gradient.png", out_dir / "bg.png")
 
-    cmd = build_ffmpeg_command("bg.png", "narration.mp3", "subs.ass",
-                               "short.mp4", cfg)
+    caps = timings["captions"]
+    clips = [f"clips/clip_{i}.mp4" for i in range(len(caps))]
+    if clips and all((out_dir / c).exists() for c in clips):
+        cmd = build_flow_ffmpeg_command(
+            clips, segment_durations(caps, timings["duration"]),
+            "narration.mp3", "subs.ass", "short.mp4", cfg)
+    else:  # Flow 클립이 없거나 모자라면 정적 배경으로 폴백한다.
+        cmd = build_ffmpeg_command("bg.png", "narration.mp3", "subs.ass",
+                                   "short.mp4", cfg)
     if dry_run:
         print(" ".join(cmd))
         return out_dir / "short.mp4"

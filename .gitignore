@@ -12,3 +12,6 @@ __pycache__/
 out/
 history.jsonl
 daily.log
+
+# Flow 브라우저 세션
+.flow_profile/

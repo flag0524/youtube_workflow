@@ -36,9 +36,9 @@ def test_run_step_raises_after_retry_exhausted(tmp_path):
         run_step("test", fn, "2026-09-12", tmp_path, dry_run=False)
 
 
-def test_step_order_is_collect_script_voice_render_upload():
+def test_step_order_is_collect_script_voice_flow_render_upload():
     from daily import STEPS
 
     assert [name for name, _ in STEPS] == [
-        "collect", "script", "voice", "render", "upload"
+        "collect", "script", "voice", "flow", "render", "upload"
     ]
