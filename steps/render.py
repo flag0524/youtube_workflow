@@ -63,18 +63,23 @@ def resolve_font(cfg: dict) -> Path:
 
 
 def build_ffmpeg_command(bg: str, mp3: str, ass: str, out: str,
-                         cfg: dict) -> list[str]:
+                         cfg: dict, overlay: str | None = None) -> list[str]:
     """모든 인자는 작업 디렉터리 기준 상대 경로여야 한다.
 
     Windows 절대경로의 드라이브 콜론(D:)은 subtitles 필터 문법과 충돌한다.
     호출부에서 cwd 를 출력 폴더로 지정해 상대 경로만 넘긴다.
     """
     v = cfg["video"]
+    if overlay:  # 알파 webm 은 libvpx 디코더로 읽어야 투명도가 살아 있다.
+        src = ["-loop", "1", "-i", bg, "-i", mp3,
+               "-c:v", "libvpx-vp9", "-i", overlay,
+               "-filter_complex", "[0:v][2:v]overlay=format=auto[v]",
+               "-map", "[v]", "-map", "1:a"]
+    else:
+        src = ["-loop", "1", "-i", bg, "-i", mp3,
+               "-vf", f"subtitles={ass}:fontsdir=fonts"]
     return [
-        "ffmpeg", "-y",
-        "-loop", "1", "-i", bg,
-        "-i", mp3,
-        "-vf", f"subtitles={ass}:fontsdir=fonts",
+        "ffmpeg", "-y", *src,
         "-c:v", "libx264", "-preset", "medium", "-crf", "23",
         "-pix_fmt", "yuv420p",
         "-r", str(v["fps"]),
@@ -86,7 +91,8 @@ def build_ffmpeg_command(bg: str, mp3: str, ass: str, out: str,
 
 
 def build_flow_ffmpeg_command(clips: list[str], durations: list[float], mp3: str,
-                              ass: str, out: str, cfg: dict) -> list[str]:
+                              ass: str, out: str, cfg: dict,
+                              overlay: str | None = None) -> list[str]:
     """Flow 클립을 세그먼트 길이만큼 잘라 9:16 으로 맞춰 잇는다. Flow 오디오는 버린다."""
     v = cfg["video"]
     w, h, fps = v["width"], v["height"], v["fps"]
@@ -97,12 +103,17 @@ def build_flow_ffmpeg_command(clips: list[str], durations: list[float], mp3: str
         for i, d in enumerate(durations)
     ]
     joined = "".join(f"[v{i}]" for i in range(len(clips)))
+    last = (f"[cat][{len(clips) + 1}:v]overlay=format=auto[v]" if overlay
+            else f"[cat]subtitles={ass}:fontsdir=fonts[v]")
     graph = (";".join(parts) + f";{joined}concat=n={len(clips)}:v=1:a=0[cat];"
-             f"[cat]subtitles={ass}:fontsdir=fonts[v]")
+             + last)
     cmd = ["ffmpeg", "-y"]
     for c in clips:
         cmd += ["-i", c]
-    cmd += ["-i", mp3, "-filter_complex", graph,
+    cmd += ["-i", mp3]
+    if overlay:
+        cmd += ["-c:v", "libvpx-vp9", "-i", overlay]
+    cmd += ["-filter_complex", graph,
             "-map", "[v]", "-map", f"{len(clips)}:a",
             "-c:v", "libx264", "-preset", "medium", "-crf", "23",
             "-pix_fmt", "yuv420p", "-r", str(fps),
@@ -125,15 +136,16 @@ def run(date_str: str, out_dir: Path, *, dry_run: bool = False) -> Path:
     shutil.copy(font_path, local_fonts / font_path.name)
     shutil.copy(Path(cfg["root"]) / "assets/bg/gradient.png", out_dir / "bg.png")
 
+    overlay = "overlay.webm" if (out_dir / "overlay.webm").exists() else None
     caps = timings["captions"]
     clips = [f"clips/clip_{i}.mp4" for i in range(len(caps))]
     if clips and all((out_dir / c).exists() for c in clips):
         cmd = build_flow_ffmpeg_command(
             clips, segment_durations(caps, timings["duration"]),
-            "narration.mp3", "subs.ass", "short.mp4", cfg)
+            "narration.mp3", "subs.ass", "short.mp4", cfg, overlay)
     else:  # Flow 클립이 없거나 모자라면 정적 배경으로 폴백한다.
         cmd = build_ffmpeg_command("bg.png", "narration.mp3", "subs.ass",
-                                   "short.mp4", cfg)
+                                   "short.mp4", cfg, overlay)
     if dry_run:
         print(" ".join(cmd))
         return out_dir / "short.mp4"

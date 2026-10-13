@@ -16,3 +16,7 @@ tmp/
 
 # Flow 브라우저 세션
 .flow_profile/
+
+# Remotion
+remotion/node_modules/
+remotion/public/

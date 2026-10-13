@@ -85,3 +85,31 @@ def test_flow_command_trims_each_clip_and_drops_flow_audio():
     assert "concat=n=2:v=1:a=0" in joined  # Flow 오디오는 이어붙이지 않는다
     assert "-map 2:a" in joined  # 나레이션은 클립 뒤 입력이다
     assert "subtitles=subs.ass" in joined and "D:" not in joined
+
+
+def test_overlay_replaces_ass_in_static_command():
+    cmd = build_ffmpeg_command("bg.png", "narration.mp3", "subs.ass",
+                               "short.mp4", CFG, overlay="overlay.webm")
+    joined = " ".join(cmd)
+    assert "subtitles" not in joined
+    assert "-c:v libvpx-vp9 -i overlay.webm" in joined  # 알파 디코더 지정
+    assert "overlay=format=auto" in joined and "-map 1:a" in joined
+
+
+def test_overlay_replaces_ass_in_flow_command():
+    from steps.render import build_flow_ffmpeg_command
+
+    cmd = build_flow_ffmpeg_command(
+        ["clips/clip_0.mp4", "clips/clip_1.mp4"], [4.0, 4.0],
+        "narration.mp3", "subs.ass", "short.mp4", CFG, overlay="overlay.webm")
+    joined = " ".join(cmd)
+    assert "subtitles" not in joined
+    assert "[cat][3:v]overlay=format=auto[v]" in joined  # 클립 2 + 나레이션 1 다음 입력
+    assert "-c:v libvpx-vp9 -i overlay.webm" in joined
+    assert "-map 2:a" in joined
+
+
+def test_no_overlay_keeps_ass_subtitles():
+    cmd = build_ffmpeg_command("bg.png", "narration.mp3", "subs.ass",
+                               "short.mp4", CFG)
+    assert "subtitles=subs.ass" in " ".join(cmd)

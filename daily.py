@@ -9,7 +9,7 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 from config import load_config
-from steps import collect, flow, render, script, upload, voice
+from steps import collect, flow, motion, render, script, upload, voice
 from steps.history import append_record
 
 STEPS = [
@@ -17,6 +17,7 @@ STEPS = [
     ("script", script.run),
     ("voice", voice.run),
     ("flow", flow.run),
+    ("motion", motion.run),
     ("render", render.run),
     ("upload", upload.run),
 ]

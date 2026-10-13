@@ -45,3 +45,18 @@
 - 테스트 클립 1개(12크레딧) 생성 직후부터 제출 버튼이 주황 info 아이콘(aria-label="크레딧 부족 경고")으로 바뀌어 더 이상 생성 불가. 홈에 "Upgrade" 배너가 있어 무료 또는 소액 플랜으로 보임.
 - 전체 실행(4세그먼트, 약 30크레딧)은 크레딧 문제로 진행하지 못함. 코드 결함이 아니다.
 - 제출 전 이 아이콘을 검사해 "Flow 크레딧이 부족하다"로 즉시 폴백하도록 했다.
+
+## 2026-10-11 모션 자막 결정
+- shorts-reel-maker.skill 검토: 자막은 정적 ASS 번인, 모션 개념 없음. 클립은 Flow 가 아니라 외부 도구 전제. 스킬이 가리키는 read_calendar_slot.py·prepare_upload_kit.py·youtube_upload.py·xlsx 가 .skill 안에 없다(불완전 포팅). 인스타 절차는 우리 프로젝트(YouTube)와 무관.
+- Jev(TypeSafe System One, jev-latest) 로 9/12·9/22 대본 12줄 판단: 강조효과 noul 0.30~0.87, 평균 약 0.7. 에너지는 훅 ~1.3·마지막 CTA 1~1.8, 나머지 ~0. '화려한 모션은 방해' noul 은 전 줄 ~0.8 로 변별력이 없었다(질문 문구에 '화려한'을 넣은 탓). 결론: 내용이 차분한 정보형이라 절제된 모션만 도움. 한계: Jev 는 텍스트 의미만 판단하고 시각 품질은 못 본다. 표본 12줄.
+- 범위: 절제된 Remotion. 훅·마지막 자막 pop, 나머지 짧은 페이드, 키워드 색 강조. 개인 채널로 보고 Remotion 무료 라이선스(개인은 상업적 이용 포함 무료, 직원 4명 이상 영리 조직은 유료) 가정. 회사 명의면 재확인 필요.
+- 구조: Remotion 이 투명 webm 오버레이를 렌더 → ffmpeg overlay. 실패하면 기존 ASS 자막으로 폴백.
+- 키워드 선택은 Jev choice(후보=자막 단어), JEV_API_KEY 없거나 오류면 최장 단어.
+
+## 2026-10-13 모션 자막 구현 결과
+- After Effects: 이 PC 에 미설치(Adobe 폴더 없음), aerender 는 설치+유료 구독 필요 → 사용자가 AE 없이 Remotion 만 쓰기로 결정. Jev 는 텍스트 의미 판단 도구라 '기술적으로 가능한가'는 판단 대상이 아니다(설치·라이선스·렌더 성공 여부는 사실 확인으로 정함).
+- Remotion 전용 브라우저(headless shell)는 spawn EFTYPE 으로 실행 불가(앱 제어 정책 추정). 설치된 Chrome 을 --browser-executable 로 지정해 해결. 사용자 승인 후 적용.
+- 렌더: vp9 + yuva420p 투명 webm. ffmpeg 가 알파를 읽으려면 입력 앞에 `-c:v libvpx-vp9` 를 지정해야 한다.
+- 폰트: remotion/public/font.ttf 로 복사해 FontFace 로 로드(gitignore, 윈도우 폰트 재배포 방지).
+- 키워드는 Jev choice. '조사 포함'(예: "AI가") 단어가 선택될 수 있다. 개선 여지.
+- 실패 시 overlay.webm 을 지우고 ASS 자막으로 폴백. 테스트 107개 통과(신규 motion 8 + render 3).
